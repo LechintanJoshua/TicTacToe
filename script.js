@@ -12,6 +12,10 @@ function Gameboard () {
 
     const getBoard = () => board;
 
+    const getRows = () => rows;
+
+    const getColumns = () => columns;
+
     const placeMark = (row, column, player) => {
         const square = board[row][column];
         
@@ -98,7 +102,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     };
 
     const checkHorizontal = (mark) => {        
-        for (let i = 0; i < 3; ++i) {
+        for (let i = 0; i < board.getRows(); ++i) {
             let ok = false;
 
             const left = board.getBoard()[i][0].getState();
@@ -116,7 +120,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     };
 
     const checkVertical = (mark) => {
-        for (let i = 0; i < 3; ++i) {
+        for (let i = 0; i < board.getColumns(); ++i) {
             let ok = false;
 
             const top = board.getBoard()[0][i].getState();
