@@ -26,12 +26,22 @@ function Gameboard () {
         square.addSquare(player);
     }
 
+    const emptySquare = (row, column) => {
+        const square = board[row][column];
+
+        if (square.getState() === '') {
+            return true;
+        }
+
+        return false;
+    }
+
     const printBoard = () => {
         const boardWithStates = board.map((row) => row.map((column) => column.getState()));
         console.log(boardWithStates);
     };
 
-    return { getBoard, getRowsNum, getColumnsNum, placeMark, printBoard };
+    return { getBoard, getRowsNum, getColumnsNum, placeMark, printBoard, emptySquare };
 }
 
 function Square () {
@@ -47,17 +57,19 @@ function Square () {
 }
 
 function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
-    const board = Gameboard();
+    let board = Gameboard();
     let rounds = 0;
 
     const players = [
         {
             name: playerOne,
-            mark: 'X'
+            mark: 'X',
+            score: 0
         },
         {
             name: playerTwo,
-            mark: 'O'
+            mark: 'O',
+            score: 0
         }
     ];
 
@@ -67,6 +79,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
     };
 
+    const getBoard = () => board.getBoard();
+
     const getActivePlayer = () => activePlayer;
 
     const printNewRound = () => {
@@ -75,7 +89,12 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     }
 
     const playRound = (row, column) => {
+        if (!board.emptySquare(row, column)) {
+            return;
+        }
+        
         console.log(`Placing ${getActivePlayer().mark} into row: ${row} and column: ${column}`);
+        
         board.placeMark(row, column, getActivePlayer().mark);
         ++rounds;
 
@@ -83,14 +102,32 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         
         if (rounds >= 5 && checkGameWon(getActivePlayer().mark)) {
             console.log(`Player ${getActivePlayer().name} has won!`);
-        }
+            getActivePlayer().score++;
+            return;
+        } else if (rounds === 9 && !checkGameWon(getActivePlayer().mark)) {
+            console.log(`It's a tie!`);
+            return;
+        } 
 
         switchTurn();
     };
 
+    const resetGame = () => {
+        board = Gameboard();
+        activePlayer = players[0];
+        printNewRound();
+        rounds = 0;
+    };
+
+    const newGame = () => {
+        resetGame();
+        players[0].score = 0;
+        players[1].score = 0;
+    }
+
     const checkGameWon = (mark) => {
         return checkDiagonal(mark) || checkHorizontal(mark) || checkVertical(mark);
-    }
+    };
 
     const checkDiagonal = (mark) => {
         const topLeft = board.getBoard()[0][0].getState();    
@@ -141,7 +178,11 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
 
     printNewRound();
 
-    return { playRound, getActivePlayer, getBoard: board.getBoard };
+    return { playRound, getActivePlayer, getBoard, resetGame, newGame };
 }
 
 const c = GameController();
+
+const displayController = (function () {
+
+})();
