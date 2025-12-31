@@ -73,11 +73,69 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         console.log(`Placing ${getActivePlayer().mark} into row: ${row} and column: ${column}`);
         board.placeMark(row, column, getActivePlayer().mark);
 
-        switchTurn();
         printNewRound();
+        
+        if (checkGameWon(getActivePlayer().mark)) {
+            console.log(`Player ${getActivePlayer().name} has won!`);
+        }
+
+        switchTurn();
     };
+
+    const checkGameWon = (mark) => {
+        return checkDiagonal(mark) || checkHorizontal(mark) || checkVertical(mark);
+    }
+
+    const checkDiagonal = (mark) => {
+        const topLeft = board.getBoard()[0][0].getState();    
+        const topRight = board.getBoard()[0][2].getState();    
+        const middle = board.getBoard()[1][1].getState();    
+        const botLeft = board.getBoard()[2][0].getState();    
+        const botRight = board.getBoard()[2][2].getState();    
+
+        return topLeft === mark && middle === mark && botRight === mark 
+            || topRight === mark && middle === mark && botLeft === mark;
+    };
+
+    const checkHorizontal = (mark) => {        
+        for (let i = 0; i < 3; ++i) {
+            let ok = false;
+
+            const left = board.getBoard()[i][0].getState();
+            const middle = board.getBoard()[i][1].getState();
+            const right = board.getBoard()[i][2].getState();
+
+            ok = left === mark && middle === mark && right === mark;
+
+            if (ok) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    const checkVertical = (mark) => {
+        for (let i = 0; i < 3; ++i) {
+            let ok = false;
+
+            const top = board.getBoard()[0][i].getState();
+            const middle = board.getBoard()[1][i].getState();
+            const bot = board.getBoard()[2][i].getState();
+
+            ok = top === mark && middle === mark && bot === mark;
+
+            if (ok) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     printNewRound();
 
     return { playRound, getActivePlayer, getBoard: board.getBoard };
 }
+
+const c = GameController();
