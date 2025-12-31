@@ -12,9 +12,9 @@ function Gameboard () {
 
     const getBoard = () => board;
 
-    const getRows = () => rows;
+    const getRowsNum = () => rows;
 
-    const getColumns = () => columns;
+    const getColumnsNum = () => columns;
 
     const placeMark = (row, column, player) => {
         const square = board[row][column];
@@ -31,7 +31,7 @@ function Gameboard () {
         console.log(boardWithStates);
     };
 
-    return { getBoard, placeMark, printBoard };
+    return { getBoard, getRowsNum, getColumnsNum, placeMark, printBoard };
 }
 
 function Square () {
@@ -48,6 +48,7 @@ function Square () {
 
 function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const board = Gameboard();
+    let rounds = 0;
 
     const players = [
         {
@@ -76,10 +77,11 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const playRound = (row, column) => {
         console.log(`Placing ${getActivePlayer().mark} into row: ${row} and column: ${column}`);
         board.placeMark(row, column, getActivePlayer().mark);
+        ++rounds;
 
         printNewRound();
         
-        if (checkGameWon(getActivePlayer().mark)) {
+        if (rounds >= 5 && checkGameWon(getActivePlayer().mark)) {
             console.log(`Player ${getActivePlayer().name} has won!`);
         }
 
@@ -102,7 +104,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     };
 
     const checkHorizontal = (mark) => {        
-        for (let i = 0; i < board.getRows(); ++i) {
+        for (let i = 0; i < board.getRowsNum(); ++i) {
             let ok = false;
 
             const left = board.getBoard()[i][0].getState();
@@ -120,7 +122,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     };
 
     const checkVertical = (mark) => {
-        for (let i = 0; i < board.getColumns(); ++i) {
+        for (let i = 0; i < board.getColumnsNum(); ++i) {
             let ok = false;
 
             const top = board.getBoard()[0][i].getState();
