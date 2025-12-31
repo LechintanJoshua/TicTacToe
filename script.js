@@ -13,13 +13,13 @@ function Gameboard () {
     const getBoard = () => board;
 
     const placeMark = (row, column, player) => {
-        const state = board[row][column].getState();
-
-        if (state !== '') {
+        const square = board[row][column];
+        
+        if (square.getState() !== '') {
             return;
         }
 
-        state.addSquare(player);
+        square.addSquare(player);
     }
 
     const printBoard = () => {
@@ -34,10 +34,50 @@ function Square () {
     let state = '';
 
     const addSquare = (player) => {
-        this.state = player;
+        state = player;
     }
     
     const getState = () => state;
 
     return { addSquare, getState };
+}
+
+function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
+    const board = Gameboard();
+
+    const players = [
+        {
+            name: playerOne,
+            mark: 'X'
+        },
+        {
+            name: playerTwo,
+            mark: 'O'
+        }
+    ];
+
+    let activePlayer = players[0];
+
+    const switchTurn = () => {
+        activePlayer = activePlayer === players[0] ? players[1] : players[0];
+    };
+
+    const getActivePlayer = () => activePlayer;
+
+    const printNewRound = () => {
+        board.printBoard();
+        console.log(`${getActivePlayer().name}'s turn.`);
+    }
+
+    const playRound = (row, column) => {
+        console.log(`Placing ${getActivePlayer().mark} into row: ${row} and column: ${column}`);
+        board.placeMark(row, column, getActivePlayer().mark);
+
+        switchTurn();
+        printNewRound();
+    };
+
+    printNewRound();
+
+    return { playRound, getActivePlayer, getBoard: board.getBoard };
 }
