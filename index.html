@@ -38,6 +38,27 @@
                 <button value="mpl" class="mpl">2 Players</button>
             </form>
         </dialog>
+
+        <dialog class="two-pl-dialog">
+            <p>Introduce your names!</p>
+
+            <form method="dialog">
+                <div>
+                    <label for="first-player">1st Player:</label>
+                    <input type="text" name="1st player" id="first-player" required placeholder="Name..." minlength="3" maxlength="20">
+                </div>
+
+                <div>
+                    <label for="second-player">2nd Player:</label>
+                    <input type="text" name="2nd player" id="second-player" required placeholder="Name..." minlength="3" maxlength="20">
+                </div>
+
+                <div class="btns-container">
+                    <button value="cancel" formnovalidate class="cancel-btn">Back</button>
+                    <button value="submit" class="submit-btn">Start Game</button>
+                </div>
+            </form>
+        </dialog>
     </main>
     <footer>
         <p><em>@ 2025 TicTacToe: </em> All rights reserved <em>by lechinta_joshua</em></p>

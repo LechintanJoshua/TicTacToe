@@ -15,6 +15,7 @@
     --neon-pink: #FF2E63;
     --grey: #424242;
     --light-red: #CF6679;
+    --size-8: 8px;
     --size-16: 16px;
     --size-18: 18px;
     --size-24: 24px;
@@ -74,7 +75,8 @@ dialog {
     border-radius: 25% 10%;
 }
 
-.mode-dialog p {
+.mode-dialog p,
+.two-pl-dialog p {
     font-size: var(--size-24);
     font-weight: bold;
 }
@@ -85,7 +87,8 @@ dialog {
     justify-content: space-around;
 }
 
-.mode-dialog form button:nth-child(n) {
+.mode-dialog form button:nth-child(n),
+.two-pl-dialog form button {
     border: 2px solid var(--dark-turqoise);
     background-color: var(--turqoise);
     padding: var(--size-16);
@@ -99,13 +102,59 @@ dialog {
     justify-content: space-evenly;
 }
 
-.mode-dialog form button:nth-child(2) {
+.mode-dialog form button:nth-child(2),
+.two-pl-dialog form button {
     border-radius: 25% 10%;
 }
 
-.mode-dialog form button:nth-child(n):hover {
+.mode-dialog form button:nth-child(n):hover,
+.two-pl-dialog form button:hover {
     background-color: var(--grey-turqoise);
     transition: 0.2s;
+    cursor: pointer;
+}
+
+.two-pl-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: var(--size-300);
+    width: var(--size-300);
+    border-radius: 10% 25%;
+}
+
+.two-pl-dialog form {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-24);
+}
+
+.two-pl-dialog form div {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.two-pl-dialog form label {
+    font-weight: 600;
+    margin-bottom: var(--size-8);
+}
+
+.two-pl-dialog form .btns-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.two-pl-dialog form .cancel-btn {
+    color: var(--neon-pink);
+}
+
+.two-pl-dialog form input {
+    font-weight: 600;
+    font-size: var(--size-16);
 }
 
 .robo {
