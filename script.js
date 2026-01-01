@@ -182,7 +182,3 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
 }
 
 const c = GameController();
-
-const displayController = (function () {
-
-})();
