@@ -21,6 +21,8 @@
     --size-24: 24px;
     --size-36: 36px;
     --size-300: 300px;
+    --size-400: 400px;
+    --size-500: 500px;
 }
 
 * {
@@ -63,13 +65,17 @@ footer p {
 
 dialog {
     margin: auto;
+    background-color: var(--dirty-white);
 }
 
-.mode-dialog[open] {
+dialog[open] {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+}
+
+.mode-dialog[open] {
     height: var(--size-300);
     width: var(--size-300);
     border-radius: 25% 10%;
@@ -108,17 +114,14 @@ dialog {
 }
 
 .mode-dialog form button:nth-child(n):hover,
-.two-pl-dialog form button:hover {
+.two-pl-dialog form button:hover,
+.win-dialog form button:hover {
     background-color: var(--grey-turqoise);
     transition: 0.2s;
     cursor: pointer;
 }
 
 .two-pl-dialog[open] {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
     height: var(--size-300);
     width: var(--size-300);
     border-radius: 10% 25%;
@@ -129,7 +132,7 @@ dialog {
     display: flex;
     flex-direction: column;
     gap: var(--size-24);
-}
+}   
 
 .two-pl-dialog form div {
     display: flex;
@@ -155,6 +158,34 @@ dialog {
 .two-pl-dialog form input {
     font-weight: 600;
     font-size: var(--size-16);
+}
+
+.win-dialog[open] {
+    height: var(--size-400);
+    width: var(--size-400);
+    border-radius: 25%;
+}
+
+.win-dialog p {
+    font-weight: bold;
+    font-size: var(--size-24);
+}
+
+.win-dialog form {
+    display: flex;
+    gap: var(--size-16);
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+}
+
+.win-dialog form button {
+    padding: var(--size-24);
+    font-size: var(--size-18);
+    border-radius: 10%;
+    width: 40%;
+    border: 2px solid var(--dark-turqoise);
+    background-color: var(--turqoise);
 }
 
 .robo {
