@@ -193,6 +193,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const twoPlDialog = document.querySelector('.two-pl-dialog');
     const winDialog = document.querySelector('.win-dialog');
     
+    
     const start = () => {
         modeDialog.showModal();
     }
@@ -210,6 +211,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             secondPlayerName.textContent = robotButton.value;
             
             modeDialog.close();
+
+            createTableFromScratch();
         });
 
         multiPlayer.addEventListener('click', () => {
@@ -218,7 +221,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         })
     }
 
-    const listenTwoPlayers = (firstPlayerName, secondPlayerName) => {
+    const listenTwoPlayers = () => {
         const firstInput = document.querySelector('#first-player');
         const secondInput = document.querySelector('#second-player');
         const backBtn = document.querySelector('.cancel-btn');
@@ -234,15 +237,35 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             
             firstPlayerName = firstInput.value;
             secondPlayerName = secondInput.value;
+            firstInput.textContent = '';
+            secondInput.textContent = '';
 
             twoPlDialog.close();
+
+            console.log(firstPlayerName);
+            console.log(secondPlayerName);
 
             createTableFromScratch();
         });
     } 
 
     const createTableFromScratch = () => {
+        const center = document.querySelector('#center');
 
+        tableBoard.classList.add('table-board');
+
+        for (let i = 0; i < 9; ++i) {
+            const cell = document.createElement('div');
+            const mark = document.createElement('div');
+            cell.classList.add('cell');
+            mark.classList.add('mark');
+
+            cell.appendChild(mark);
+
+            tableBoard.appendChild(cell);
+        }
+
+        center.appendChild(tableBoard);
     }
 
     init();
