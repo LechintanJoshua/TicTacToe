@@ -12,14 +12,20 @@
     --turqoise: #14FFEC;
     --grey-turqoise: #29d6c8;
     --dirty-white: #EDEDED;
+    --grey-white: #d6d6d6;
     --neon-pink: #FF2E63;
     --grey: #424242;
     --light-red: #CF6679;
+    --size-6: 6px;
     --size-8: 8px;
+    --size-10: 10px;
+    --size-12: 12px;
     --size-16: 16px;
     --size-18: 18px;
     --size-24: 24px;
+    --size-32: 32px;
     --size-36: 36px;
+    --size-48: 48px;
     --size-300: 300px;
     --size-400: 400px;
     --size-500: 500px;
@@ -41,25 +47,26 @@ body {
 h1 {
     margin: 0 var(--size-16);
     color: var(--dirty-white);
+    font-size: var(--size-24);
 }
 
 header {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--size-16);
+    padding: var(--size-18);
     background-color: var(--dark-black);
 }
 
 footer {
-    padding: var(--size-18);
+    padding: var(--size-16);
     background-color: #323232;
     text-align: center;
 }
 
 footer p {
     color: var(--dirty-white);
-    font-size: var(--size-18);
+    font-size: var(--size-16);
     font-weight: bold;
 }
 
@@ -114,7 +121,52 @@ main {
 
 .display .center {
     width: 40%;
-    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: var(--size-24);
+}
+
+.display .center p {
+    text-align: center;
+    font-size: var(--size-32);
+    font-weight: bold;
+    color: var(--dirty-white);
+}
+
+.display .center .table-board {
+    border: var(--size-8) solid var(--dark-grey);
+    border-radius: var(--size-10);
+    width: 100%;
+    max-width: var(--size-500);
+    aspect-ratio: 1 / 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    background-color: var(--dark-grey);
+    gap: var(--size-12);
+    box-shadow: var(--size-6) var(--size-6) var(--size-8) var(--size-8) var(--grey-turqoise);
+}
+
+.center .table-board .cell {
+    border-radius: var(--size-10);
+    background-color: var(--dirty-white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center .table-board #mark {
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+}
+
+.center .table-board #mark:hover {
+    cursor: pointer;
+    border: 1px solid var(--grey);
+    background-color: var(--grey-white);
 }
 
 .mode-dialog[open] {
