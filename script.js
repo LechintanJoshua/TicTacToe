@@ -181,4 +181,71 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     return { playRound, getActivePlayer, getBoard, resetGame, newGame };
 }
 
-const c = GameController();
+(function ScreenController () {
+    const gameController = GameController();
+    const announcer = document.querySelector('.announcer');
+    const leftScore = document.querySelector('#left-score');
+    const rightScore = document.querySelector('#right-score');
+    const firstPlayerName = document.querySelector('#first-player-name');
+    const secondPlayerName = document.querySelector('#second-player-name');
+    const tableBoard = document.createElement('div');
+    const modeDialog = document.querySelector('.mode-dialog');
+    const twoPlDialog = document.querySelector('.two-pl-dialog');
+    const winDialog = document.querySelector('.win-dialog');
+    
+    const start = () => {
+        modeDialog.showModal();
+    }
+
+    const init = () => {
+        listenMode();
+        listenTwoPlayers();
+    }
+
+    const listenMode = () => {
+        const robotButton = document.querySelector('.robot');
+        const multiPlayer = document.querySelector('.mpl');
+
+        robotButton.addEventListener('click', () =>  {
+            secondPlayerName.textContent = robotButton.value;
+            
+            modeDialog.close();
+        });
+
+        multiPlayer.addEventListener('click', () => {
+            modeDialog.close();
+            twoPlDialog.showModal();
+        })
+    }
+
+    const listenTwoPlayers = (firstPlayerName, secondPlayerName) => {
+        const firstInput = document.querySelector('#first-player');
+        const secondInput = document.querySelector('#second-player');
+        const backBtn = document.querySelector('.cancel-btn');
+        const startBtn = document.querySelector('.submit-btn');
+
+        backBtn.addEventListener('click', () => {
+            twoPlDialog.close();
+            modeDialog.showModal();
+        });
+
+        startBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            firstPlayerName = firstInput.value;
+            secondPlayerName = secondInput.value;
+
+            twoPlDialog.close();
+
+            createTableFromScratch();
+        });
+    } 
+
+    const createTableFromScratch = () => {
+
+    }
+
+    init();
+    start();
+
+})();

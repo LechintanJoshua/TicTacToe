@@ -157,13 +157,13 @@ main {
     align-items: center;
 }
 
-.center .table-board #mark {
+.center .table-board .mark {
     width: 90%;
     height: 90%;
     border-radius: 50%;
 }
 
-.center .table-board #mark:hover {
+.center .table-board .mark:hover {
     cursor: pointer;
     border: 1px solid var(--grey);
     background-color: var(--grey-white);
