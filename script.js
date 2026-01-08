@@ -62,12 +62,12 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
 
     const players = [
         {
-            name: playerOne,
+            name: '',
             mark: 'X',
             score: 0
         },
         {
-            name: playerTwo,
+            name: '',
             mark: 'O',
             score: 0
         }
@@ -82,6 +82,11 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const getBoard = () => board.getBoard();
 
     const getActivePlayer = () => activePlayer;
+
+    const setPlayersName = (firstPlayerName, secondPlayerName) => {
+        players[0].name = firstPlayerName;
+        players[1].name = secondPlayerName;
+    };
 
     const printNewRound = () => {
         board.printBoard();
@@ -122,7 +127,9 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const newGame = () => {
         resetGame();
         players[0].score = 0;
+        players[0].name = '';
         players[1].score = 0;
+        players[1].name = '';
     }
 
     const checkGameWon = (mark) => {
@@ -178,7 +185,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
 
     printNewRound();
 
-    return { playRound, getActivePlayer, getBoard, resetGame, newGame };
+    return { playRound, getActivePlayer, getBoard, setPlayersName, resetGame, newGame };
 }
 
 (function ScreenController () {
@@ -196,6 +203,10 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     
     const start = () => {
         modeDialog.showModal();
+        gameController.newGame();
+        gameController.setPlayersName(firstPlayerName, secondPlayerName);
+        leftScore.textContent = '0';
+        rightScore.textContent = '0';
     }
 
     const init = () => {
@@ -208,8 +219,9 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         const multiPlayer = document.querySelector('.mpl');
 
         robotButton.addEventListener('click', () =>  {
+            firstPlayerName.textContent = 'You'
             secondPlayerName.textContent = robotButton.value;
-            
+
             modeDialog.close();
 
             createTableFromScratch();
@@ -235,8 +247,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         startBtn.addEventListener('click', (e) => {
             e.preventDefault();
             
-            firstPlayerName = firstInput.value;
-            secondPlayerName = secondInput.value;
+            firstPlayerName.textContent = firstInput.value;
+            secondPlayerName.textContent = secondInput.value;
             firstInput.textContent = '';
             secondInput.textContent = '';
 
@@ -270,5 +282,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
 
     init();
     start();
-
 })();
+
+// const dialog = document.querySelector('.single-pl-dialog');
+// const dialog = document.querySelector('.mode-dialog');
+// dialog.showModal();
