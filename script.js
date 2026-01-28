@@ -204,7 +204,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const start = () => {
         modeDialog.showModal();
         gameController.newGame();
-        gameController.setPlayersName(firstPlayerName, secondPlayerName);
+        gameController.setPlayersName(firstPlayerName.textContent, secondPlayerName.textContent);
         leftScore.textContent = '0';
         rightScore.textContent = '0';
     }
@@ -218,13 +218,17 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         const robotButton = document.querySelector('.robot');
         const multiPlayer = document.querySelector('.mpl');
 
-        robotButton.addEventListener('click', () =>  {
+        robotButton.addEventListener('click', (e) =>  {
+            e.preventDefault();
+
             firstPlayerName.textContent = 'You'
             secondPlayerName.textContent = robotButton.value;
 
             modeDialog.close();
 
             createTableFromScratch();
+                announceRound();
+
         });
 
         multiPlayer.addEventListener('click', () => {
@@ -254,10 +258,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
 
             twoPlDialog.close();
 
-            console.log(firstPlayerName);
-            console.log(secondPlayerName);
-
             createTableFromScratch();
+            announceRound();
         });
     } 
 
@@ -280,8 +282,21 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         center.appendChild(tableBoard);
     }
 
+    const announceRound = () => {
+        const name = gameController.getActivePlayer().name;
+
+        if (name === 'You') {
+            announcer.textContent = 'Your turn!';
+        } else {
+            announcer.textContent = `${name} 's turn`;
+        }
+
+        console.log(name);
+    }
+
     init();
     start();
+    // playRound();
 })();
 
 // const dialog = document.querySelector('.single-pl-dialog');
