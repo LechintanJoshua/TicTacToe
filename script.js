@@ -36,12 +36,7 @@ function Gameboard () {
         return false;
     }
 
-    const printBoard = () => {
-        const boardWithStates = board.map((row) => row.map((column) => column.getState()));
-        console.log(boardWithStates);
-    };
-
-    return { getBoard, getRowsNum, getColumnsNum, placeMark, printBoard, emptySquare };
+    return { getBoard, getRowsNum, getColumnsNum, placeMark, emptySquare };
 }
 
 function Square () {
@@ -59,6 +54,7 @@ function Square () {
 function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     let board = Gameboard();
     let rounds = 0;
+    let hasEnded = false;
 
     const players = [
         {
@@ -88,40 +84,55 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         players[1].name = secondPlayerName;
     };
 
-    const printNewRound = () => {
-        board.printBoard();
-        console.log(`${getActivePlayer().name}'s turn.`);
-    }
-
     const playRound = (row, column) => {
         if (!board.emptySquare(row, column)) {
             return;
         }
-        
-        console.log(`Placing ${getActivePlayer().mark} into row: ${row} and column: ${column}`);
-        
+                
         board.placeMark(row, column, getActivePlayer().mark);
         ++rounds;
 
-        printNewRound();
-        
-        if (rounds >= 5 && checkGameWon(getActivePlayer().mark)) {
-            console.log(`Player ${getActivePlayer().name} has won!`);
-            getActivePlayer().score++;
-            return;
-        } else if (rounds === 9 && !checkGameWon(getActivePlayer().mark)) {
-            console.log(`It's a tie!`);
-            return;
-        } 
+        checkGameState();
 
-        switchTurn();
+        if (!hasEnded) {
+            switchTurn();
+            return;
+        }
+
+        if (hasEnded && getWinningPlayer() != null) {
+            getWinningPlayer().score++;
+        }
     };
+
+    const getHasEnded = () => {
+        return hasEnded;
+    }
+
+    const checkGameState = () => {
+        if (rounds >= 5 && checkGameWon(getActivePlayer().mark)) {
+            hasEnded = true;
+        }
+
+        if (rounds === 9) {
+            hasEnded = true;
+        }
+    }
+
+    const getWinningPlayer = () => {
+        if (checkGameWon(players[0].mark)) {
+            return players[0];
+        } else if (checkGameWon(players[1].mark)) {
+            return players[1];
+        }
+
+        return null;
+    }
 
     const resetGame = () => {
         board = Gameboard();
         activePlayer = players[0];
-        printNewRound();
         rounds = 0;
+        hasEnded = false;
     };
 
     const newGame = () => {
@@ -183,9 +194,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         return false;
     }
 
-    printNewRound();
-
-    return { playRound, getActivePlayer, getBoard, setPlayersName, resetGame, newGame };
+    return { playRound, getActivePlayer, getBoard, getHasEnded, setPlayersName, newGame, getWinningPlayer };
 }
 
 (function ScreenController () {
@@ -199,8 +208,11 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const modeDialog = document.querySelector('.mode-dialog');
     const twoPlDialog = document.querySelector('.two-pl-dialog');
     const winDialog = document.querySelector('.win-dialog');
-    
-    
+    const xMark = '<svg class="Icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>alpha-x</title><path d="M9,7L11,12L9,17H11L12,14.5L13,17H15L13,12L15,7H13L12,9.5L11,7H9Z" /></svg>'
+    const oMark = '<svg class="Icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>alpha-o</title><path d="M11,7A2,2 0 0,0 9,9V15A2,2 0 0,0 11,17H13A2,2 0 0,0 15,15V9A2,2 0 0,0 13,7H11M11,9H13V15H11V9Z" /></svg>'
+    let isSinglePlayer = true;
+    // let sPlTurn = true;
+
     const start = () => {
         modeDialog.showModal();
         gameController.newGame();
@@ -224,11 +236,11 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             firstPlayerName.textContent = 'You'
             secondPlayerName.textContent = robotButton.value;
 
+            setPlayersName(firstPlayerName, secondPlayerName);
             modeDialog.close();
 
             createTableFromScratch();
-                announceRound();
-
+            announceRound();
         });
 
         multiPlayer.addEventListener('click', () => {
@@ -256,16 +268,20 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             firstInput.textContent = '';
             secondInput.textContent = '';
 
+            setPlayersName(firstPlayerName, secondPlayerName);
             twoPlDialog.close();
 
             createTableFromScratch();
             announceRound();
         });
+
+        setPlayersName(firstPlayerName, secondPlayerName);
     } 
 
     const createTableFromScratch = () => {
         const center = document.querySelector('#center');
 
+        tableBoard.innerHTML = '';
         tableBoard.classList.add('table-board');
 
         for (let i = 0; i < 9; ++i) {
@@ -277,9 +293,103 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             cell.appendChild(mark);
 
             tableBoard.appendChild(cell);
+        
+            mark.dataset.row = Math.floor(i / 3);
+            mark.dataset.column = i % 3;
         }
 
-        center.appendChild(tableBoard);
+        if (!center.contains(tableBoard)) {
+            center.appendChild(tableBoard);
+        }
+
+            listenForClicks();
+    }
+
+    const listenForClicks = () => {
+        const markCells = document.querySelectorAll('.mark');
+        console.log(markCells);
+
+        markCells.forEach(c => {
+            console.log(c);
+
+            c.addEventListener('click', () => {
+                if(gameController.getHasEnded() || c.innerHTML !== '') {
+                    return;
+                }
+
+                if (isSinglePlayer) {
+                    placeMarksSinglePlayer(markCells, c);
+                } else {
+                    placeMarksMultiplayer(c);
+                }
+            });
+        });
+    }
+
+    const getRobotChoice = () => {
+        return { row: Math.floor(Math.random() * 3), column: Math.floor(Math.random() * 3) }
+    }
+
+    const placeMarksSinglePlayer = (divList, div) => {
+        const row = div.dataset.row;
+        const column = div.dataset.column;
+        
+        console.log("DAMA");
+        gameController.playRound(row, column);
+        div.innerHTML = xMark;
+            
+        if (gameController.getHasEnded()) {
+            return;
+        }
+
+        let aiMove = getRobotChoice();
+
+        while (true) {
+            if (divIsElligible(divList, aiMove)) {
+                break;
+            }
+
+            aiMove = getRobotChoice();
+        }
+
+        console.log(aiMove);
+        console.log("Robotuu");
+        console.log(getDivWithSets(divList, aiMove));
+        const choice = getDivWithSets(divList, aiMove);
+        gameController.playRound(aiMove.row, aiMove.column);
+        choice.innerHTML = oMark;
+        sPlTurn = true;
+    }
+
+    const getDivWithSets = (divList, aiMove) => {
+        return Array.from(divList).find(div => div.dataset.row == aiMove.row && div.dataset.column == aiMove.column);
+    }
+
+    const divIsElligible = (divList, aiMove) => {
+        const div = getDivWithSets(divList, aiMove);
+
+        return div.innerHTML === '';
+    }
+
+    const placeMarksMultiplayer = (div) => {
+        const row = c.dataset.row;
+        const column = c.dataset.column;
+
+        if(gameController.getActivePlayer().mark === 'X') {
+            c.innerHTML = xMark;
+        } else {
+            c.innerHTML = oMark;
+            console.log("AAAAAAAAAA");
+        }
+
+        console.log(gameController.getActivePlayer());
+        gameController.playRound(row, column);
+    }
+
+    const resetGameBoardMarks = () => {
+        tableBoard.childNodes.forEach(div => {
+            div.firstChild.innerHtml = '';
+        });
     }
 
     const announceRound = () => {
@@ -290,15 +400,12 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         } else {
             announcer.textContent = `${name} 's turn`;
         }
+    }
 
-        console.log(name);
+    const setPlayersName = () => {
+        gameController.setPlayersName(firstPlayerName.textContent, secondPlayerName.textContent);
     }
 
     init();
     start();
-    // playRound();
 })();
-
-// const dialog = document.querySelector('.single-pl-dialog');
-// const dialog = document.querySelector('.mode-dialog');
-// dialog.showModal();
