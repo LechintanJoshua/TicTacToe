@@ -148,53 +148,66 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     };
 
     const checkDiagonal = (mark) => {
-        const topLeft = board.getBoard()[0][0].getState();    
-        const topRight = board.getBoard()[0][2].getState();    
-        const middle = board.getBoard()[1][1].getState();    
-        const botLeft = board.getBoard()[2][0].getState();    
-        const botRight = board.getBoard()[2][2].getState();    
+        const b = board.getBoard();
+        
+        if (b[0][0].getState() === mark && b[1][1].getState() === mark && b[2][2].getState() === mark) {
+            return [{row: 0, column: 0}, {row: 1, column: 1}, {row: 2, column: 2}];
+        }
+        
+        if (b[0][2].getState() === mark && b[1][1].getState() === mark && b[2][0].getState() === mark) {
+            return [{row: 0, column: 2}, {row: 1, column: 1}, {row: 2, column: 0}];
+        }
 
-        return topLeft === mark && middle === mark && botRight === mark 
-            || topRight === mark && middle === mark && botLeft === mark;
+        return null;
     };
 
     const checkHorizontal = (mark) => {        
         for (let i = 0; i < board.getRowsNum(); ++i) {
-            let ok = false;
-
             const left = board.getBoard()[i][0].getState();
             const middle = board.getBoard()[i][1].getState();
             const right = board.getBoard()[i][2].getState();
 
-            ok = left === mark && middle === mark && right === mark;
-
-            if (ok) {
-                return true;
+            if (left === mark && middle === mark && right === mark) {
+                return [
+                    {row: i, column: 0}, 
+                    {row: i, column: 1}, 
+                    {row: i, column: 2}
+                ];
             }
+
         }
 
-        return false;
+        return null;
     };
 
     const checkVertical = (mark) => {
         for (let i = 0; i < board.getColumnsNum(); ++i) {
-            let ok = false;
-
             const top = board.getBoard()[0][i].getState();
             const middle = board.getBoard()[1][i].getState();
             const bot = board.getBoard()[2][i].getState();
 
-            ok = top === mark && middle === mark && bot === mark;
-
-            if (ok) {
-                return true;
+            if (top === mark && middle === mark && bot === mark) {
+                return [
+                    {row: 0, column: i}, 
+                    {row: 1, column: i}, 
+                    {row: 2, column: i}
+                ];
             }
         }
 
-        return false;
+        return null;
     }
 
-    return { playRound, getActivePlayer, getBoard, getHasEnded, setPlayersName, newGame, getWinningPlayer };
+    const getWinningCombination = (mark) => {
+        return checkHorizontal(mark) || checkVertical(mark) || checkDiagonal(mark);
+    }
+
+    const getPlayersSocre = () => {
+        return [players[0].score, players[1].score];
+    }
+
+    return { playRound, getActivePlayer, getBoard, getHasEnded, setPlayersName, 
+        newGame, getWinningPlayer, getPlayersSocre, getWinningCombination };
 }
 
 (function ScreenController () {
@@ -211,7 +224,6 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const xMark = '<svg class="Icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>alpha-x</title><path d="M9,7L11,12L9,17H11L12,14.5L13,17H15L13,12L15,7H13L12,9.5L11,7H9Z" /></svg>'
     const oMark = '<svg class="Icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>alpha-o</title><path d="M11,7A2,2 0 0,0 9,9V15A2,2 0 0,0 11,17H13A2,2 0 0,0 15,15V9A2,2 0 0,0 13,7H11M11,9H13V15H11V9Z" /></svg>'
     let isSinglePlayer = true;
-    // let sPlTurn = true;
 
     const start = () => {
         modeDialog.showModal();
@@ -224,6 +236,12 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     const init = () => {
         listenMode();
         listenTwoPlayers();
+    }
+
+    const endGame = () => {
+        if (gameController.getHasEnded()) {
+
+        }
     }
 
     const listenMode = () => {
@@ -247,6 +265,15 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             modeDialog.close();
             twoPlDialog.showModal();
         })
+    }
+
+    const gameEndedDialog = () => {
+        winDialog.showModal();
+        const p = document.querySelector('.winner');
+        const again = document.querySelector('.win-dialog .again')
+        p.textContent = `${gameController.getWinningPlayer()} has Won!`;
+
+        
     }
 
     const listenTwoPlayers = () => {
@@ -307,11 +334,10 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
 
     const listenForClicks = () => {
         const markCells = document.querySelectorAll('.mark');
-        console.log(markCells);
+
+        winDialog.showModal();
 
         markCells.forEach(c => {
-            console.log(c);
-
             c.addEventListener('click', () => {
                 if(gameController.getHasEnded() || c.innerHTML !== '') {
                     return;
@@ -330,11 +356,18 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         return { row: Math.floor(Math.random() * 3), column: Math.floor(Math.random() * 3) }
     }
 
+    const colorWinningSquares = () => {
+
+    }
+
+    const getWinningSquare = () => {
+
+    }
+
     const placeMarksSinglePlayer = (divList, div) => {
         const row = div.dataset.row;
         const column = div.dataset.column;
         
-        console.log("DAMA");
         gameController.playRound(row, column);
         div.innerHTML = xMark;
             
@@ -352,9 +385,6 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             aiMove = getRobotChoice();
         }
 
-        console.log(aiMove);
-        console.log("Robotuu");
-        console.log(getDivWithSets(divList, aiMove));
         const choice = getDivWithSets(divList, aiMove);
         gameController.playRound(aiMove.row, aiMove.column);
         choice.innerHTML = oMark;
@@ -379,10 +409,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             c.innerHTML = xMark;
         } else {
             c.innerHTML = oMark;
-            console.log("AAAAAAAAAA");
         }
 
-        console.log(gameController.getActivePlayer());
         gameController.playRound(row, column);
     }
 
@@ -390,6 +418,16 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         tableBoard.childNodes.forEach(div => {
             div.firstChild.innerHtml = '';
         });
+    }
+
+    const updatePlayersScore = () => {
+        const score = gameController.getPlayersSocre();
+        leftScore.textContent = score[0];
+        rightScore.textContent = score[1];
+    }
+
+    const roundHasEnded = () => {
+        updatePlayersScore();
     }
 
     const announceRound = () => {
