@@ -207,7 +207,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     }
 
     return { playRound, getActivePlayer, getBoard, getHasEnded, setPlayersName, 
-        newGame, getWinningPlayer, getPlayersSocre, getWinningCombination };
+        newGame, getWinningPlayer, getPlayersSocre, getWinningCombination, resetGame };
 }
 
 (function ScreenController () {
@@ -238,12 +238,6 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         listenTwoPlayers();
     }
 
-    const endGame = () => {
-        if (gameController.getHasEnded()) {
-
-        }
-    }
-
     const listenMode = () => {
         const robotButton = document.querySelector('.robot');
         const multiPlayer = document.querySelector('.mpl');
@@ -267,15 +261,6 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         })
     }
 
-    const gameEndedDialog = () => {
-        winDialog.showModal();
-        const p = document.querySelector('.winner');
-        const again = document.querySelector('.win-dialog .again')
-        p.textContent = `${gameController.getWinningPlayer()} has Won!`;
-
-        
-    }
-
     const listenTwoPlayers = () => {
         const firstInput = document.querySelector('#first-player');
         const secondInput = document.querySelector('#second-player');
@@ -294,6 +279,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             secondPlayerName.textContent = secondInput.value;
             firstInput.textContent = '';
             secondInput.textContent = '';
+            isSinglePlayer = false;
 
             setPlayersName(firstPlayerName, secondPlayerName);
             twoPlDialog.close();
@@ -329,13 +315,11 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             center.appendChild(tableBoard);
         }
 
-            listenForClicks();
+        listenForClicks();
     }
 
     const listenForClicks = () => {
         const markCells = document.querySelectorAll('.mark');
-
-        winDialog.showModal();
 
         markCells.forEach(c => {
             c.addEventListener('click', () => {
@@ -356,14 +340,6 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         return { row: Math.floor(Math.random() * 3), column: Math.floor(Math.random() * 3) }
     }
 
-    const colorWinningSquares = () => {
-
-    }
-
-    const getWinningSquare = () => {
-
-    }
-
     const placeMarksSinglePlayer = (divList, div) => {
         const row = div.dataset.row;
         const column = div.dataset.column;
@@ -372,6 +348,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         div.innerHTML = xMark;
             
         if (gameController.getHasEnded()) {
+            roundHasEnded();
             return;
         }
 
@@ -388,7 +365,10 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         const choice = getDivWithSets(divList, aiMove);
         gameController.playRound(aiMove.row, aiMove.column);
         choice.innerHTML = oMark;
-        sPlTurn = true;
+
+        if (gameController.getHasEnded()) {
+            roundHasEnded();
+        }
     }
 
     const getDivWithSets = (divList, aiMove) => {
@@ -414,20 +394,87 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         gameController.playRound(row, column);
     }
 
-    const resetGameBoardMarks = () => {
-        tableBoard.childNodes.forEach(div => {
-            div.firstChild.innerHtml = '';
-        });
-    }
-
     const updatePlayersScore = () => {
         const score = gameController.getPlayersSocre();
         leftScore.textContent = score[0];
         rightScore.textContent = score[1];
     }
 
+    const declareWinner = () => {
+        const p = document.querySelector('.winner');
+        const winner = gameController.getWinningPlayer();
+
+        if (winner) {
+            p.textContent = `${winner.name} won!`;
+        } else {
+            p.textContent = "It's a draw!";
+        }
+    }
+
+    const colorWinningSquares = () => {
+        if (gameController.getWinningPlayer() === null) {
+            return;
+        }
+
+        const winComb = gameController.getWinningCombination(gameController.getWinningPlayer().mark);
+        const markCells = document.querySelectorAll('.mark');
+
+        markCells.forEach(c => {
+            const obj = {
+                row: parseInt(c.dataset.row),
+                column: parseInt(c.dataset.column)
+            }
+
+            if (winComb.some(ws => ws.row === obj.row && ws.column === obj.column)) {
+                c.style.backgroundColor = 'red';
+            }
+        });
+    }
+
+    const resetGameBoardMarks = () => {
+        const markCells = document.querySelectorAll('.mark');
+
+        markCells.forEach(c => {
+            c.style.backgroundColor = '';
+            c.innerHTML = '';
+        });        
+    }
+
+    const anotherRoundButton = () => {
+        const again = document.querySelector('.win-dialog .again');
+        
+        again.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetGameBoardMarks();
+            gameController.resetGame();
+            winDialog.close();
+        });
+    }
+
+    const resetGameButton = () => {
+        const reset = document.querySelector('.win-dialog .reset');
+
+        reset.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetGameBoardMarks();
+            gameController.newGame();
+            winDialog.close();
+        });
+    }
+
+    const gameEndedDialog = () => {
+        setTimeout(() => {
+            winDialog.showModal();
+        }, '800');
+        declareWinner();
+        anotherRoundButton();
+        resetGameButton();
+    }
+
     const roundHasEnded = () => {
         updatePlayersScore();
+        colorWinningSquares();
+        gameEndedDialog();
     }
 
     const announceRound = () => {

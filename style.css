@@ -259,6 +259,7 @@ main {
     height: var(--size-400);
     width: var(--size-400);
     border-radius: 25%;
+    opacity: 0.7;
 }
 
 .win-dialog p {
