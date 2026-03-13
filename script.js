@@ -463,6 +463,7 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             e.preventDefault();
             resetGameBoardMarks();
             winDialog.close();
+            isSinglePlayer = true;
             start();
         });
     }
