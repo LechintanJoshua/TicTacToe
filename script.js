@@ -277,8 +277,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
             
             firstPlayerName.textContent = firstInput.value;
             secondPlayerName.textContent = secondInput.value;
-            firstInput.textContent = '';
-            secondInput.textContent = '';
+            firstInput.value = '';
+            secondInput.value = '';
             isSinglePlayer = false;
 
             setPlayersName(firstPlayerName, secondPlayerName);
@@ -382,16 +382,21 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
     }
 
     const placeMarksMultiplayer = (div) => {
-        const row = c.dataset.row;
-        const column = c.dataset.column;
+        const row = div.dataset.row;
+        const column = div.dataset.column;
 
         if(gameController.getActivePlayer().mark === 'X') {
-            c.innerHTML = xMark;
+            div.innerHTML = xMark;
         } else {
-            c.innerHTML = oMark;
+            div.innerHTML = oMark;
         }
 
         gameController.playRound(row, column);
+        announceRound();
+
+        if (gameController.getHasEnded()) {
+            roundHasEnded();
+        }
     }
 
     const updatePlayersScore = () => {
@@ -457,8 +462,8 @@ function GameController (playerOne = 'Player One', playerTwo = 'Player Two') {
         reset.addEventListener('click', (e) => {
             e.preventDefault();
             resetGameBoardMarks();
-            gameController.newGame();
             winDialog.close();
+            start();
         });
     }
 
